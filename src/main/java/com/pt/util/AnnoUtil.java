@@ -1,6 +1,9 @@
 package com.pt.util;
 
 import com.pt.annition.PtAnno;
+import com.pt.annition.PtGet;
+import com.pt.annition.PtPost;
+import com.pt.model.HttpMethodAnno;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -8,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.DirectoryStream;
@@ -31,6 +35,10 @@ public class AnnoUtil {
 
     //设置的对应的map用来存取自定义注解中value和对应的该类的对象
     public static Map<String,Class<?>> classMap=new HashMap<>();
+
+    //将自定义的方法映射也存入该map中
+    public static Map<String, HttpMethodAnno> methodMap=new HashMap<>();
+
     private static List<String> list=new ArrayList<>();
 
     static {
@@ -81,6 +89,30 @@ public class AnnoUtil {
                                 }else {
                                     //如果设置value的话则用设置的value内容进行显示
                                     classMap.put(value,aClass);
+                                }
+                                //将对应的方法的映射也添加上去
+                                Method[] methods = aClass.getMethods();
+                                for(Method method:methods){
+                                    //获取方法上面的路径名称
+                                    PtPost post = method.getAnnotation(PtPost.class);
+                                    if(post!=null){
+                                        HttpMethodAnno methodAnno=new HttpMethodAnno();
+                                        methodAnno.setClassName(className);
+                                        methodAnno.setValue(method.getName());
+                                        methodAnno.setComsumer(post.comsumer());
+                                        methodAnno.setProcude(post.procude());
+                                        methodMap.put(post.value(),methodAnno);
+                                    }else{
+                                        PtGet get = method.getAnnotation(PtGet.class);
+                                        if(get!=null){
+                                            HttpMethodAnno methodAnno=new HttpMethodAnno();
+                                            methodAnno.setValue(method.getName());
+                                            methodAnno.setClassName(className);
+                                            methodAnno.setComsumer(get.comsumer());
+                                            methodAnno.setProcude(get.procude());
+                                            methodMap.put(get.value(),methodAnno);
+                                        }
+                                    }
                                 }
                             }
                         }

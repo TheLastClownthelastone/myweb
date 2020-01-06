@@ -30,7 +30,7 @@ public class NettyHandler extends ChannelInboundHandlerAdapter {
         log.info("建立连接，开始处理逻辑");
         //进行日志打印访问路径
         FullHttpRequest request= (FullHttpRequest) msg;
-
+        System.out.println(request.getUri());
        //通过对应的方法进行映射到页面或者响应json数据
        if(request.uri().equals("/")||request.uri().equals("/index")){
            Consumer c=System.out::println;
