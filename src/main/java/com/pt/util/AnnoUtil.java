@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -85,7 +86,7 @@ public class AnnoUtil {
                                 String value = aClass.getAnnotation(PtAnno.class).value();
                                 //如果没有显示的话则用默认的显示
                                 if("noname".equals(value)){
-                                    classMap.put(className.substring(className.lastIndexOf(".")+1),aClass);
+                                    classMap.put(className,aClass);
                                 }else {
                                     //如果设置value的话则用设置的value内容进行显示
                                     classMap.put(value,aClass);
@@ -101,7 +102,7 @@ public class AnnoUtil {
                                         methodAnno.setValue(method.getName());
                                         methodAnno.setComsumer(post.comsumer());
                                         methodAnno.setProcude(post.procude());
-                                        methodMap.put(post.value(),methodAnno);
+                                        methodMap.put("/"+post.value(),methodAnno);
                                     }else{
                                         PtGet get = method.getAnnotation(PtGet.class);
                                         if(get!=null){
@@ -110,7 +111,7 @@ public class AnnoUtil {
                                             methodAnno.setClassName(className);
                                             methodAnno.setComsumer(get.comsumer());
                                             methodAnno.setProcude(get.procude());
-                                            methodMap.put(get.value(),methodAnno);
+                                            methodMap.put("/"+get.value(),methodAnno);
                                         }
                                     }
                                 }
@@ -124,6 +125,11 @@ public class AnnoUtil {
         }
     }
 
+    /**
+     *  通过递归的形式获取一个文件夹下面所有的文件
+     * @param file
+     * @return
+     */
     public static List<String> getFileNames(File file){
         String str=file.getPath();
         if(file.isDirectory()){
@@ -201,10 +207,14 @@ public class AnnoUtil {
       Class<?> aClass = classMap.get(key);
       Object o=null;
       try {
-           o = aClass.newInstance();
+           o = aClass.getDeclaredConstructor().newInstance();
       } catch (InstantiationException e) {
           e.printStackTrace();
       } catch (IllegalAccessException e) {
+          e.printStackTrace();
+      } catch (NoSuchMethodException e) {
+          e.printStackTrace();
+      } catch (InvocationTargetException e) {
           e.printStackTrace();
       }
       return o;

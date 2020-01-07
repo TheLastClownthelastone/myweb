@@ -1,5 +1,6 @@
 package com.pt.util;
 
+import com.pt.controller.FirstController;
 import com.pt.model.HttpMethodAnno;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,11 +14,11 @@ import java.util.List;
 public class HttpUtil {
     /**
      * 通过对应的路径执行映射get的方法
-     * @param path
-     * @param paramType
-     * @param params
+     * @param path 路劲地址
+     * @param paramType 参数类型
+     * @param params 参数的值
      */
-    public Object doGet(String path, List<Object> params, Class<?>... paramType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public  static Object doGet(String path, List<Object> params, Class<?>... paramType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         for (Object param:
                 paramType) {
             System.out.println("参数为："+param);
@@ -25,11 +26,11 @@ public class HttpUtil {
         HttpMethodAnno methodAnno = AnnoUtil.methodMap.get(path);
         String className = methodAnno.getClassName();
         String methodName = methodAnno.getValue();
-        Object result=null;
         Class<?> aClass = AnnoUtil.classMap.get(className);
         Object o = AnnoUtil.getObj(className);
+
         Method method = aClass.getMethod(methodName, paramType);
-        result = method.invoke(o, params);
+        Object result = method.invoke(o, params.get(0));
         return result;
     }
 
@@ -39,7 +40,7 @@ public class HttpUtil {
      * @param params
      * @return
      */
-    public Object doPost(String path, List<Object> params, Class<?>... paramType){
+    public  static Object doPost(String path, List<Object> params, Class<?>... paramType){
         for (Object param:
                 paramType) {
             System.out.println("参数为："+param);

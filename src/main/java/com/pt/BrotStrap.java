@@ -39,7 +39,7 @@ public class BrotStrap {
     }
 
     public static void main(String[] args) {
-        BrotStrap brotStrap= (BrotStrap) AnnoUtil.getObj("BrotStrap");
+        BrotStrap brotStrap= (BrotStrap) AnnoUtil.getObj("com.pt.BrotStrap");
         brotStrap.start();
     }
 
